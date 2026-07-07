@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-portfolio-deployment
+  labels:
+    app: my-portfolio
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-portfolio
+  template:
+    metadata:
+      labels:
+        app: my-portfolio
+    spec: #  Sahi hai! Ab isme 4 spaces hain, ye 'template' ke andar aa gaya hai
+      containers:
+      - name: react-app
+        image: farhan091/my-portfolio:b06e3519970a0fec3bf487e9e282e6a5e33f71be
+        ports:
+        - containerPort: 80
+        imagePullPolicy: Always
