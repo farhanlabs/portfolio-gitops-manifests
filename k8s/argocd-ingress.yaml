@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-ingress
+  namespace: argocd # 🌟 IMPORTANT: Ise 'argocd' namespace me hi banana hai
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod # SSL cert ke liye
+    # 🔗 Traefik ko bolna ki ArgoCD server se andar HTTPS par baat kare
+    traefik.ingress.kubernetes.io/service.serversscheme: https
+    # 🔄 Jo kal automatic HTTPS redirect middleware banaya tha, use yahan link kiya
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-to-https@kubernetescrd
+spec:
+  tls:
+  - hosts:
+    - argo-farhan.duckdns.org # ⚠️ YAHAN APNA NAYA DUCKDNS DOMAIN LIKHO
+    secretName: argocd-server-tls-secret
+  rules:
+  - host: argo-farhan.duckdns.org # ⚠️ YAHAN BHI SAME NAYA DOMAIN LIKHO
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server # ArgoCD ki core service ka naam
+            port:
+              number: 443 # ArgoCD internal secure port
