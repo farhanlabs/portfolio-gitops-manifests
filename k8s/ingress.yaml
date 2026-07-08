@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-portfolio-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    cert-manager.io/cluster-issuer: letsencrypt-prod # Step 3 wale issuer ko link kiya
+spec:
+  tls:
+  - hosts:
+    - portfolio-farhan.duckdns.org # ⚠️ Yahan apna naya domain naam likho (e.g., farhanraza.in)
+    secretName: my-portfolio-tls-secret
+  rules:
+  - host: portfolio-farhan.duckdns.org # ⚠️ Yahan bhi wahi naya domain naam likho
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: my-portfolio-service # Aapki service ka naam
+            port:
+              number: 80 # Service ka core port
