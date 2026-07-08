@@ -2,7 +2,7 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: argocd-redirect-to-https
-  namespace: argocd # 🌟 Fix: ArgoCD ke namespace me hi middleware bana diya
+  namespace: argocd
 spec:
   redirectScheme:
     scheme: https
@@ -15,9 +15,8 @@ metadata:
   namespace: argocd
   annotations:
     kubernetes.io/ingress.class: traefik
-    cert-manager.io/cluster-issuer: letsencrypt-prod # ClusterIssuer global hota hai, toh yeh chalega
-    traefik.ingress.kubernetes.io/service.serversscheme: https
-    # 🌟 Fix: Local namespace wale middleware ko sahi se link kiya
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    # 🔗 Humne purani 'serversscheme: https' wali line hata di hai
     traefik.ingress.kubernetes.io/router.middlewares: argocd-argocd-redirect-to-https@kubernetescrd
 spec:
   tls:
@@ -34,4 +33,4 @@ spec:
           service:
             name: argocd-server
             port:
-              number: 443
+              number: 80 # 🌟 FIX: Port 443 ki jagah 80 kar diya hai
