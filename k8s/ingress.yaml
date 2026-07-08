@@ -6,7 +6,7 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
     cert-manager.io/cluster-issuer: letsencrypt-prod
-    # 🌟 NEW LINE: Traefik ko automatic HTTPS redirect karne ke liye bolna
+    # 🌟 FIX: Naye Traefik format ke hisaab se middleware link kiya
     traefik.ingress.kubernetes.io/router.middlewares: default-redirect-to-https@kubernetescrd
 spec:
   tls:
