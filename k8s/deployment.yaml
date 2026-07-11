@@ -1,13 +1,37 @@
+# ------------------------------
+# Ye batata hai ki Deployment kis API version ka hai.
+# Deployment hamesha apps/v1 use karta hai.
+# Agar galat version likh diya to Deployment create nahi hoga.
+# ------------------------------
+
 apiVersion: apps/v1
+# ------------------------------
+# Hum kis Kubernetes object ko bana rahe hain.
+# Yahan Deployment bana rahe hain.
+#
+# Agar Pod likh dete:
+# - Sirf 1 Pod banta.
+# - Auto healing nahi hoti.
+# - Auto scaling nahi hoti.
+# Isliye production me Deployment use karte hain.
+# ------------------------------
 kind: Deployment
+# Deployment ka naam.
+# kubectl get deployment me yehi naam dikhega.
 metadata:
   name: my-portfolio-deployment
+# Label ek tag hai.
+# Baad me Service isi label se Pod ko dhoondhegi.
   labels:
     app: my-portfolio
 spec:
   replicas: 3
   selector:
     matchLabels:
+# Deployment sirf unhi Pods ko manage karega
+# jinke paas ye label hoga.
+# Agar niche template me label different hua
+# to Deployment Pod ko identify hi nahi karega.
       app: my-portfolio
   template:
     metadata:
@@ -16,7 +40,7 @@ spec:
     spec: #  Sahi hai! Ab isme 4 spaces hain, ye 'template' ke andar aa gaya hai
       containers:
       - name: react-app
-        image: farhan091/my-portfolio:204cbe28f78c06445e980305801b67e6943c5d31
+        image: farhan091/my-portfolio:fd3fd651c35f9b8f6116de6afa0809f14ad61cd7
         ports:
         - containerPort: 80
         imagePullPolicy: Always
