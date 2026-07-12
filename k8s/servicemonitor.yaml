@@ -1,0 +1,16 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: my-portfolio-service-monitor
+  namespace: monitoring # 👈 Isko Prometheus ke paas 'monitoring' namespace me hi deploy karna hai
+  labels:
+    release: monitoring-stack # 👈 Yeh label lagate hi Prometheus Operator ise lapat lega
+spec:
+  selector:
+    matchLabels:
+      app: my-portfolio # 👈 Humaari Service ke label 'app: my-portfolio' se exact match hona chahiye
+  namespaceSelector:
+    any: true # Poore cluster me default namespace ke andar se bhi dhoond nikalega
+  endpoints:
+  - port: metrics # 👈 Service me jo naya port name 'metrics' banaya tha, wahi yahan aayega
+    interval: 15s # Har 15 second me Prometheus data pull karega

@@ -1,46 +1,42 @@
-# ------------------------------
-# Ye batata hai ki Deployment kis API version ka hai.
-# Deployment hamesha apps/v1 use karta hai.
-# Agar galat version likh diya to Deployment create nahi hoga.
-# ------------------------------
-
 apiVersion: apps/v1
-# ------------------------------
-# Hum kis Kubernetes object ko bana rahe hain.
-# Yahan Deployment bana rahe hain.
-#
-# Agar Pod likh dete:
-# - Sirf 1 Pod banta.
-# - Auto healing nahi hoti.
-# - Auto scaling nahi hoti.
-# Isliye production me Deployment use karte hain.
-# ------------------------------
 kind: Deployment
-# Deployment ka naam.
-# kubectl get deployment me yehi naam dikhega.
 metadata:
   name: my-portfolio-deployment
-# Label ek tag hai.
-# Baad me Service isi label se Pod ko dhoondhegi.
   labels:
     app: my-portfolio
 spec:
   replicas: 3
   selector:
     matchLabels:
-# Deployment sirf unhi Pods ko manage karega
-# jinke paas ye label hoga.
-# Agar niche template me label different hua
-# to Deployment Pod ko identify hi nahi karega.
       app: my-portfolio
   template:
     metadata:
+      # 💥 LINK 1 (SUPER IMPORTANT):
+      # Niche jo 'app: my-portfolio' label hai, yeh is Pod ka aadhar card hai.
+      # Service.yaml isi label ko dhoondte hue is Pod tak pahonchegi.
       labels:
-        app: my-portfolio
-    spec: #  Sahi hai! Ab isme 4 spaces hain, ye 'template' ke andar aa gaya hai
+        app: my-portfolio 
+    spec:
       containers:
+      # ─── CONTAINER 1: MAIN REACT APP ───
       - name: react-app
         image: farhan091/my-portfolio:204cbe28f78c06445e980305801b67e6943c5d31
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
-        imagePullPolicy: Always
+          name: http # Service.yaml ka targetPort is naam se connect hoga
+      
+      # ─── CONTAINER 2: THE SIDECAR TRANSLATOR ───
+      - name: nginx-exporter
+        image: nginx/nginx-prometheus-exporter:1.1.0
+        # 💥 LINK 2 (INTERNAL FLOW):
+        # Yeh container '127.0.0.1:80' use kar raha hai kyunki jab do container ek hi Pod ke andar hote hain,
+        # toh wo aapas me localhost par baat kar sakte hain. Yeh seedhe React container ka data khench raha hai.
+        args:
+        - -nginx.scrape-uri=http://127.0.0.1:80/stub_status
+        ports:
+        - containerPort: 9113
+          # 💥 LINK 3 (PORT DEPENDENCY):
+          # Is port ka naam humne 'metrics' rakha hai. 
+          # Service.yaml isi naam wale port ko target karegi.
+          name: metrics
