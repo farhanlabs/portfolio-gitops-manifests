@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portfolio-nginx-config
+  namespace: default
+data:
+  default.conf: |
+    server {
+        listen 80;
+        server_name localhost;
+
+        # ─── REACT STATIC FILES CONFIG ───
+        location / {
+            root /usr/share/nginx/html; # Standard path jahan React build files rehti hain
+            index index.html index.htm;
+            try_files $uri $uri/ /index.html; # React Router ko crash hone se bachane ke liye
+        }
+
+        # ─── NAYA DARWAZA: SIDECAR KE LIYE METRICS PAGE ───
+        location /stub_status {
+            stub_status on;       # Metrics generation chalu karo
+            allow 127.0.0.1;      # Sirf local sidecar container ko aane do
+            deny all;             # Bahar ki duniya ke liye block rakho
+        }
+    }
