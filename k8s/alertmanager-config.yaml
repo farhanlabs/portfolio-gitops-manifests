@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: portfolio-slack-config
+  namespace: monitoring
+  labels:
+    release: monitoring-stack
+spec:
+  route:
+    groupBy: ['alertname']
+    groupWait: 30s
+    groupInterval: 5m
+    repeatInterval: 3h
+    receiver: 'Slack-Receiver'
+  receivers:
+  - name: 'Slack-Receiver'
+    slackConfigs:               # Humne generic hata kar Slack-native lagaya h
+    - channel: '#new-channel'   # Aapka Slack channel naam
+      apiURL:
+        name: slack-webhook-secret  # Jo secret humne Step 1 me banaya
+        key: webhook-url
+      text: "🚨 *Farhan bhai, Portfolio par traffic blast ho gaya hai!* \n*Summary:* {{ .CommonAnnotations.summary }}\n*Description:* {{ .CommonAnnotations.description }}"

@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: my-portfolio-alerts
+  namespace: monitoring         # Yeh monitoring namespace me hi jayega
+  labels:
+    release: monitoring-stack   # Prometheus Operator ko trigger karne ke liye label
+spec:
+  groups:
+  - name: portfolio-traffic.rules
+    rules:
+    - alert: NginxTooManyActiveConnections
+      expr: sum(nginx_connections_active{service="my-portfolio-service"}) > 800
+      for: 1m                   # Agar 1 minute tak continuous load raha toh hi alert aayega
+      labels:
+        severity: critical
+        app: my-portfolio
+      annotations:
+        summary: "Farhan bhai, Portfolio par traffic blast ho gaya hai!"
+        description: "Portfolio par live active connections 800 ke paar pahonch gaye hain. Current Value: {{ $value }}"
